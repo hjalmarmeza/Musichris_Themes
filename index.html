@@ -1,6 +1,17 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
+    <script>
+        // NUCLEAR RESET: Borrar todos los Service Workers y Cachés antiguos
+        if ('serviceWorker' in navigator) {
+            navigator.serviceWorker.getRegistrations().then(registrations => {
+                for(let registration of registrations) { registration.unregister(); }
+            });
+        }
+        caches.keys().then(names => {
+            for (let name of names) caches.delete(name);
+        });
+    </script>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <meta name="mobile-web-app-capable" content="yes">
@@ -407,7 +418,7 @@
             <label>Entrada de Fuente (Link, Noticia o Comentario)</label>
             <textarea id="sourceContent" placeholder="Pega aquí un Link de noticia, un comentario o un texto para procesar..." style="background: rgba(255,255,255,0.05); border: 1px solid var(--glass-border); border-radius: 16px; padding: 20px; color: white; font-family: inherit; font-size: 16px; outline: none; min-height: 100px; resize: vertical;"></textarea>
         </div>
-        <button class="forge-btn" onclick="forgeContent()">Forjar Video</button>
+        <button class="forge-btn" onclick="forgeContent()">FORJAR AHORA v2.1 💎</button>
 
         <div id="preview" class="preview-area">
             <div class="phase-card">
