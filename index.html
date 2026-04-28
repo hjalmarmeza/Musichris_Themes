@@ -61,13 +61,14 @@
             padding: 10px;
             border-radius: 50%;
             cursor: pointer;
-            z-index: 1000;
+            z-index: 10001; /* Por encima de todo */
             backdrop-filter: blur(10px);
             font-size: 20px;
             display: flex;
             align-items: center;
             justify-content: center;
             transition: all 0.3s ease;
+            -webkit-tap-highlight-color: transparent;
         }
 
         #btn-settings:hover {
@@ -81,10 +82,11 @@
             position: fixed;
             inset: 0;
             background: rgba(0,0,0,0.9);
-            z-index: 10000;
+            z-index: 10002; /* Por encima del botón */
             align-items: center;
             justify-content: center;
             backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
         }
 
         .modal-content {
@@ -362,7 +364,7 @@
         <button class="enter-btn" onclick="enterApp()">ENTRAR A LA FORJA</button>
     </div>
 
-    <button id="btn-settings" onclick="toggleSettings()">⚙️</button>
+    <button id="btn-settings">⚙️</button>
 
     <div id="modal-settings" class="modal">
         <div class="modal-content">
@@ -426,6 +428,13 @@
         window.onload = () => {
             document.getElementById('gh-token').value = localStorage.getItem('gh_token') || '';
             document.getElementById('cerebras-key').value = localStorage.getItem('cerebras_key') || '';
+            
+            // Event listener robusto para el engranaje
+            document.getElementById('btn-settings').addEventListener('click', (e) => {
+                e.preventDefault();
+                console.log('Gear clicked');
+                toggleSettings();
+            });
         };
 
         function toggleSettings() {
