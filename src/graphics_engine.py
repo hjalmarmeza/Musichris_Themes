@@ -86,6 +86,16 @@ def generate_phase_card(title, body, output_path, width=1080, height=1920):
     # Renderizado final centrado en el repositorio
     y_cursor = repo_y_start + (repo_height - total_text_h) // 2
     
+    # --- DIAMOND GLASS CONTAINER ---
+    # Dibujar un recuadro de cristal semitransparente para dar profundidad
+    padding = 60
+    box_rect = [repo_x_start - padding, repo_y_start - padding, repo_x_start + repo_width + padding, repo_y_start + repo_height + padding]
+    
+    # 1. Sombra exterior
+    draw.rounded_rectangle(box_rect, radius=40, fill=(0, 0, 0, 180))
+    # 2. Borde Neón Cian (Sello MusiChris)
+    draw.rounded_rectangle(box_rect, radius=40, outline="#00f2ff", width=3)
+    
     # Dibujar Título (Solo si no está vacío)
     if title and title.strip():
         w_t = draw.textbbox((0, 0), title, font=font_t)[2]
