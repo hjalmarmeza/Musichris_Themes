@@ -50,6 +50,77 @@
             z-index: -1;
         }
 
+        /* Settings Button */
+        #btn-settings {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: rgba(255,255,255,0.1);
+            border: 1px solid var(--glass-border);
+            color: white;
+            padding: 10px;
+            border-radius: 50%;
+            cursor: pointer;
+            z-index: 1000;
+            backdrop-filter: blur(10px);
+            font-size: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+        }
+
+        #btn-settings:hover {
+            transform: rotate(90deg) scale(1.1);
+            background: var(--accent);
+        }
+
+        /* Modal Settings */
+        .modal {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(0,0,0,0.9);
+            z-index: 10000;
+            align-items: center;
+            justify-content: center;
+            backdrop-filter: blur(15px);
+        }
+
+        .modal-content {
+            width: 90%;
+            max-width: 400px;
+            background: #111;
+            border: 1px solid var(--accent);
+            border-radius: 24px;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .modal-content h3 {
+            color: var(--accent);
+            margin-top: 0;
+            letter-spacing: 2px;
+        }
+
+        .modal-content p {
+            font-size: 12px;
+            color: var(--text-dim);
+            margin-bottom: 20px;
+        }
+
+        .input-box {
+            width: 100%;
+            padding: 12px;
+            background: rgba(255,255,255,0.05);
+            border: 1px solid var(--glass-border);
+            border-radius: 12px;
+            color: white;
+            margin-bottom: 15px;
+            outline: none;
+            box-sizing: border-box;
+        }
+
         header {
             width: 100%;
             padding: 30px 0;
@@ -291,6 +362,19 @@
         <button class="enter-btn" onclick="enterApp()">ENTRAR A LA FORJA</button>
     </div>
 
+    <button id="btn-settings" onclick="toggleSettings()">⚙️</button>
+
+    <div id="modal-settings" class="modal">
+        <div class="modal-content">
+            <h3>DIAMOND CONTROL</h3>
+            <p>Configura tus llaves para producción remota.</p>
+            <input type="password" id="gh-token" placeholder="GitHub PAT (ghp_...)" class="input-box">
+            <input type="password" id="cerebras-key" placeholder="Cerebras API Key (csk_...)" class="input-box">
+            <button class="forge-btn" onclick="saveSettings()">GUARDAR CONFIGURACIÓN</button>
+            <button class="forge-btn" style="background: transparent; border: 1px solid #444; color: #888; margin-top: 10px;" onclick="toggleSettings()">CERRAR</button>
+        </div>
+    </div>
+
     <header>
         <div class="logo-area">
             <img src="assets/logo_app.png" alt="MusiChris Logo" class="logo-img">
@@ -337,10 +421,29 @@
 
     <script>
         let lastForgeData = null;
-        let lastRenderPath = null;
+
+        // Cargar llaves al inicio
+        window.onload = () => {
+            document.getElementById('gh-token').value = localStorage.getItem('gh_token') || '';
+            document.getElementById('cerebras-key').value = localStorage.getItem('cerebras_key') || '';
+        };
+
+        function toggleSettings() {
+            const modal = document.getElementById('modal-settings');
+            modal.style.display = modal.style.display === 'flex' ? 'none' : 'flex';
+        }
+
+        function saveSettings() {
+            localStorage.setItem('gh_token', document.getElementById('gh-token').value);
+            localStorage.setItem('cerebras_key', document.getElementById('cerebras-key').value);
+            alert('✅ Configuración guardada con éxito.');
+            toggleSettings();
+        }
 
         async function forgeContent() {
             const content = document.getElementById('sourceContent').value;
+            const cKey = localStorage.getItem('cerebras_key');
+            
             const statusText = document.getElementById('status-text');
             const statusIcon = document.getElementById('status-icon');
             const preview = document.getElementById('preview');
@@ -350,125 +453,91 @@
             const p4 = document.getElementById('p4');
 
             if(!content) return alert('Por favor, pega un contenido o link.');
+            if(!cKey) return alert('Falta Cerebras API Key en Ajustes (⚙️).');
             
-            statusText.innerText = 'Forjando guion con el motor Cerebras (Llama 3.1)...';
+            statusText.innerText = 'Forjando guion ministerial...';
             statusIcon.innerText = '✨';
             preview.style.display = 'block';
             
-            p1.innerText = 'Procesando fuente...';
+            p1.innerText = 'Consultando oráculo de sabiduría...';
             p2.innerText = '...';
             p3.innerText = '...';
             p4.innerText = '...';
 
             try {
-                const response = await fetch('/api/forge', {
+                // Llamada directa a Cerebras desde el navegador
+                const response = await fetch('https://api.cerebras.ai/v1/chat/completions', {
                     method: 'POST',
                     headers: {
+                        'Authorization': `Bearer ${cKey}`,
                         'Content-Type': 'application/json'
                     },
-                    body: JSON.stringify({ content })
+                    body: JSON.stringify({
+                        model: "llama3.1-70b",
+                        messages: [
+                            { role: "system", content: "Eres el motor de sabiduría ministerial 'MusiChris Themes'. Transforma noticias o links en 3 fases de reflexión cristiana profunda para YouTube Shorts. Formato JSON: {phase1, phase2, phase3, yt_title, yt_description}" },
+                            { role: "user", content: `Noticia: ${content}` }
+                        ],
+                        response_format: { type: "json_object" }
+                    })
                 });
 
-                if (!response.ok) throw new Error('Error en la forja');
+                if (!response.ok) throw new Error('Fallo en la conexión remota con Cerebras');
 
-                const data = await response.json();
+                const rawData = await response.json();
+                const data = JSON.parse(rawData.choices[0].message.content);
                 lastForgeData = data;
                 
                 p1.innerText = data.phase1;
                 p2.innerText = data.phase2;
                 p3.innerText = data.phase3;
-                p4.innerText = "@Musichris_Studio\nCaminemos juntos en fe";
+                p4.innerText = "@Musichris_Studio\n¡Caminemos juntos en fe!";
 
                 statusText.innerText = 'Forja completada con éxito';
                 statusIcon.innerText = '✅';
 
             } catch (error) {
                 console.error(error);
-                statusText.innerText = 'Error en el motor de sabiduría';
+                statusText.innerText = 'Error: ' + error.message;
                 statusIcon.innerText = '❌';
-                p1.innerText = 'No se pudo procesar el contenido.';
+                p1.innerText = 'No se pudo forjar el contenido remótamente.';
             }
         }
 
         async function renderVideo() {
+            const ghToken = localStorage.getItem('gh_token');
+            const content = document.getElementById('sourceContent').value;
             const statusText = document.getElementById('status-text');
-            const p1 = document.getElementById('p1').innerText;
-            const p2 = document.getElementById('p2').innerText;
-            const p3 = document.getElementById('p3').innerText;
 
-            if(!lastForgeData) return alert('Primero debes forjar el contenido.');
+            if(!ghToken) return alert('Falta GitHub Token en Ajustes (⚙️).');
+            if(!content) return alert('No hay contenido para renderizar.');
 
-            statusText.innerText = 'Iniciando renderizado industrial...';
+            statusText.innerText = 'Despachando orden a la nube (GitHub Actions)...';
             
             try {
-                const response = await fetch('/api/render', {
+                // Trigger GitHub Action vía API
+                const response = await fetch('https://api.github.com/repos/hjalmarmeza/Musichris_Themes/actions/workflows/forge.yml/dispatches', {
                     method: 'POST',
                     headers: {
+                        'Authorization': `token ${ghToken}`,
+                        'Accept': 'application/vnd.github.v3+json',
                         'Content-Type': 'application/json'
                     },
-                    body: JSON.stringify({ 
-                        phases: lastForgeData
+                    body: JSON.stringify({
+                        ref: 'main',
+                        inputs: { theme: content }
                     })
                 });
 
-                if (!response.ok) throw new Error('Error en el renderizado');
+                if (!response.ok) throw new Error('Error al conectar con GitHub');
 
-                const data = await response.json();
-                lastRenderPath = data.fullPath;
-                statusText.innerText = '¡Video renderizado con éxito!';
-                
-                // Añadir botón de publicar si no existe
-                if (!document.getElementById('publish-btn')) {
-                    const pubBtn = document.createElement('button');
-                    pubBtn.id = 'publish-btn';
-                    pubBtn.className = 'forge-btn';
-                    pubBtn.style.background = 'var(--accent-purple)';
-                    pubBtn.style.color = 'white';
-                    pubBtn.style.marginTop = '10px';
-                    pubBtn.innerText = '🚀 PUBLICAR EN YOUTUBE';
-                    pubBtn.onclick = publishVideo;
-                    document.getElementById('preview').appendChild(pubBtn);
-                }
-
-                alert('🚀 ' + data.message + '\nArchivo: ' + data.file);
+                statusText.innerText = '🚀 ¡Orden recibida! Revisa la pestaña Actions en GitHub.';
+                alert('💎 Misión iniciada en la nube. GitHub Actions está fabricando tu video ahora mismo.');
 
             } catch (error) {
                 console.error(error);
-                statusText.innerText = 'Error en la producción de video';
-                alert('❌ Hubo un fallo en el motor de video.');
-            }
-        }
-
-        async function publishVideo() {
-            const statusText = document.getElementById('status-text');
-            if (!lastRenderPath || !lastForgeData) return alert('Faltan datos de renderizado.');
-
-            statusText.innerText = 'Subiendo a YouTube...';
-            
-            try {
-                const response = await fetch('/api/publish', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({ 
-                        filePath: lastRenderPath,
-                        title: lastForgeData.yt_title,
-                        description: lastForgeData.yt_description
-                    })
-                });
-
-                if (!response.ok) throw new Error('Error en la publicación');
-
-                const data = await response.json();
-                statusText.innerText = '¡Publicado con éxito en YouTube!';
-                alert('✅ ' + data.message + '\nURL: ' + data.url);
-                window.open(data.url, '_blank');
-
-            } catch (error) {
-                console.error(error);
-                statusText.innerText = 'Error en la publicación a YouTube';
-                alert('❌ Hubo un fallo al subir el video.');
+                statusText.innerText = 'Error al despachar orden.';
+                alert('❌ No se pudo conectar con GitHub Actions. Revisa tu Token.');
             }
         }
 
