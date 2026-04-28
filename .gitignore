@@ -4,8 +4,11 @@ output/
 .DS_Store
 *.mp4
 *.png
-!assets/Fondo_theme.mp4
+!assets/logo_app.png
+!assets/master_template.png
 !assets/master_template_vertical.png
+!assets/smoke_texture.png
+!assets/Fondo_theme.mp4
 !assets/music/Alas_del_Alba.wav
 !assets/music/Logo Hjalmar Animado.mp4
 src/client_secrets.json

@@ -1,9 +1,9 @@
 const CACHE_NAME = 'musichris-themes-v1';
 const ASSETS = [
   './',
-  './index.html',
-  './assets/logo_app.png',
-  './assets/master_template.png'
+  'index.html',
+  'assets/logo_app.png',
+  'assets/master_template.png'
 ];
 
 self.addEventListener('install', (event) => {
