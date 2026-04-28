@@ -222,6 +222,59 @@
             to { opacity: 1; transform: translateY(0); }
         }
 
+        /* Splash Screen */
+        #splash-screen {
+            position: fixed;
+            inset: 0;
+            background: #0a0a0b;
+            z-index: 9999;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.8s cubic-bezier(0.65, 0, 0.35, 1);
+        }
+
+        #splash-screen.fade-out {
+            opacity: 0;
+            visibility: hidden;
+            transform: scale(1.1);
+        }
+
+        .splash-logo {
+            width: 150px;
+            height: 150px;
+            margin-bottom: 30px;
+            animation: pulse 2s infinite ease-in-out;
+            filter: drop-shadow(0 0 30px rgba(0, 242, 255, 0.4));
+        }
+
+        .enter-btn {
+            padding: 15px 40px;
+            background: transparent;
+            border: 1px solid var(--accent);
+            color: var(--accent);
+            border-radius: 30px;
+            font-size: 14px;
+            letter-spacing: 4px;
+            text-transform: uppercase;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .enter-btn:hover {
+            background: var(--accent);
+            color: black;
+            box-shadow: 0 0 30px var(--accent);
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.05); opacity: 0.8; }
+        }
+
         footer {
             margin-top: auto;
             padding: 40px;
@@ -232,6 +285,12 @@
     </style>
 </head>
 <body>
+    <!-- Splash Screen -->
+    <div id="splash-screen">
+        <img src="assets/logo_app.png" class="splash-logo" alt="Logo">
+        <button class="enter-btn" onclick="enterApp()">ENTRAR A LA FORJA</button>
+    </div>
+
     <header>
         <div class="logo-area">
             <img src="assets/logo_app.png" alt="MusiChris Logo" class="logo-img">
@@ -410,6 +469,16 @@
                 console.error(error);
                 statusText.innerText = 'Error en la publicación a YouTube';
                 alert('❌ Hubo un fallo al subir el video.');
+            }
+        }
+
+        function enterApp() {
+            const splash = document.getElementById('splash-screen');
+            splash.classList.add('fade-out');
+            
+            // Sonido opcional o haptic feedback puede ir aquí
+            if (window.navigator.vibrate) {
+                window.navigator.vibrate(50);
             }
         }
 
