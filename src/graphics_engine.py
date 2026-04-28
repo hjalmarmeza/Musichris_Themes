@@ -93,8 +93,8 @@ def generate_phase_card(title, body, output_path, width=1080, height=1920):
     
     # 1. Sombra exterior
     draw.rounded_rectangle(box_rect, radius=40, fill=(0, 0, 0, 180))
-    # 2. Borde Neón Cian (Sello MusiChris)
-    draw.rounded_rectangle(box_rect, radius=40, outline="#00f2ff", width=3)
+    # 2. Borde (Eliminado por petición para mayor limpieza visual)
+    # draw.rounded_rectangle(box_rect, radius=40, outline="#00f2ff", width=3)
     
     # Dibujar Título (Solo si no está vacío)
     if title and title.strip():
