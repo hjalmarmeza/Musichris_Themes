@@ -1,0 +1,29 @@
+[Script Info]
+Title: Musichris Soul - Nota de Vida Style v10.0
+ScriptType: v4.00+
+PlayResX: 1080
+PlayResY: 1920
+Timer: 100.0000
+
+[V4+ Styles]
+Format: Name, Fontname, Fontsize, PrimaryColour, SecondaryColour, OutlineColour, BackColour, Bold, Italic, Underline, StrikeOut, ScaleX, ScaleY, Spacing, Angle, BorderStyle, Outline, Shadow, Alignment, MarginL, MarginR, MarginV, Encoding
+; Estilo de la CAJA (Caja oscura semitransparente - Reducimos altura relativa)
+Style: Card,Georgia,70,&H00FFFFFF,&H000000FF,&H00000000,&H90101010,0,0,0,0,100,100,0,0,4,0,0,5,150,150,450,1
+; Estilo del Texto Principal (Blanco Serif - Más espacio entre letras y interlineado manual)
+Style: MainText,Georgia,68,&H00FFFFFF,&H000000FF,&H00000000,&H00000000,0,0,0,0,100,100,2,0,1,0,0,5,200,200,500,1
+; Estilo de la Cita (Debajo de la línea - Más elegante)
+Style: Citation,Georgia,55,&H00EEEEEE,&H000000FF,&H00000000,&H00000000,0,1,0,0,100,100,3,0,1,0,0,5,200,200,380,1
+; Estilo Pie de Página (Más bajo para no interferir con la tarjeta)
+Style: Footer,Avenir Next,40,&H00CCCCCC,&H000000FF,&H00000000,&H00000000,1,0,0,0,100,100,8,0,1,0,0,8,100,100,80,1
+
+[Events]
+Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
+Dialogue: 0,0:00:00.00,0:01:05.00,Card,,0,0,0,,{\fad(500,500)} 
+Dialogue: 1,0:00:02.00,0:00:19.50,MainText,,0,0,0,,{\fad(800,800)}En el huerto de los\Nolivos, Jesús suda\Nsangre mientras rinde Su\Nvoluntad al Padre.
+Dialogue: 1,0:00:02.00,0:00:19.50,Citation,,0,0,0,,{\fad(1000,1000)}{\fsp-5}————————————\NMateo 26:39
+Dialogue: 2,0:00:20.00,0:00:39.50,MainText,,0,0,0,,{\fad(800,800)}Getsemaní significa\N'prensa de aceite'; de\NSu dolor brotó nuestra\Nsanidad plena.
+Dialogue: 2,0:00:20.00,0:00:39.50,Citation,,0,0,0,,{\fad(1000,1000)}{\fsp-5}————————————\NREVELACIÓN
+Dialogue: 3,0:00:40.00,0:00:54.50,MainText,,0,0,0,,{\fad(800,800)}{\c&H00FFFF&}¡Hay propósito! Lo que\Nhoy te cuesta rendir,\Nmañana será el aceite de\Nunción para otros.
+Dialogue: 3,0:00:40.00,0:00:54.50,Citation,,0,0,0,,{\fad(1000,1000)}{\fsp-5}————————————\NESPERANZA
+Dialogue: 1,0:00:55.00,0:01:04.00,Footer,,0,0,0,,{\fad(800,800)}{\an5\pos(540,1650)}@Musichris_Studio\N{\fscx85\fscy85}¡Caminemos juntos en fe!\N{\fscx75\fscy75\c&H00FFFF&}Suscríbete ahora para más reflexiones
+Dialogue: 5,0:00:01.00,0:00:54.50,Footer,,0,0,0,,{\fad(2000,0)}MUSICHRIS | NOTA DE VIDA

@@ -1,0 +1,20 @@
+[Script Info]
+Title: Musichris Soul - Nota de Vida Style v10.0
+ScriptType: v4.00+
+PlayResX: 1080
+PlayResY: 1920
+Timer: 100.0000
+
+[V4+ Styles]
+Format: Name, Fontname, Fontsize, PrimaryColour, SecondaryColour, OutlineColour, BackColour, Bold, Italic, Underline, StrikeOut, ScaleX, ScaleY, Spacing, Angle, BorderStyle, Outline, Shadow, Alignment, MarginL, MarginR, MarginV, Encoding
+; Estilo de la CAJA (Caja oscura semitransparente - Reducimos altura relativa)
+Style: Card,Georgia,70,&H00FFFFFF,&H000000FF,&H00000000,&H90101010,0,0,0,0,100,100,0,0,4,0,0,5,150,150,450,1
+; Estilo del Texto Principal (Blanco Serif - Más espacio entre letras y interlineado manual)
+Style: MainText,Georgia,68,&H00FFFFFF,&H000000FF,&H00000000,&H00000000,0,0,0,0,100,100,2,0,1,0,0,5,200,200,500,1
+; Estilo de la Cita (Debajo de la línea - Más elegante)
+Style: Citation,Georgia,55,&H00EEEEEE,&H000000FF,&H00000000,&H00000000,0,1,0,0,100,100,3,0,1,0,0,5,200,200,380,1
+; Estilo Pie de Página (Más bajo para no interferir con la tarjeta)
+Style: Footer,Avenir Next,40,&H00CCCCCC,&H000000FF,&H00000000,&H00000000,1,0,0,0,100,100,8,0,1,0,0,8,100,100,80,1
+
+[Events]
+Format: Layer, Start, End, Style, Name, MarginL, MarginR, MarginV, Effect, Text
