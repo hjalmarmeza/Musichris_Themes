@@ -50,27 +50,28 @@
             z-index: -1;
         }
 
-        /* Settings Button */
+        /* Settings Button - REUBICADO A LA ZONA SEGURA (INFERIOR DERECHA) */
         #btn-settings {
             position: fixed;
-            top: 15px;
-            right: 15px;
-            background: rgba(0, 242, 255, 0.2);
-            border: 1px solid var(--accent);
-            color: white;
-            padding: 15px; /* Área de toque más grande */
+            bottom: 30px;
+            right: 30px;
+            background: linear-gradient(135deg, var(--accent), var(--accent-purple));
+            border: none;
+            color: black;
+            width: 60px;
+            height: 60px;
             border-radius: 50%;
             cursor: pointer;
-            z-index: 99999; /* Máxima prioridad */
+            z-index: 99999;
             backdrop-filter: blur(10px);
             -webkit-backdrop-filter: blur(10px);
-            font-size: 24px;
+            font-size: 28px;
             display: flex;
             align-items: center;
             justify-content: center;
-            transition: all 0.3s ease;
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
             -webkit-tap-highlight-color: transparent;
-            box-shadow: 0 0 15px rgba(0, 242, 255, 0.3);
+            box-shadow: 0 10px 30px rgba(0, 242, 255, 0.5);
         }
 
         #btn-settings:hover {
