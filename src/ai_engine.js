@@ -21,8 +21,8 @@ async function forgeThemeScript(topic) {
                         "phase1": "Resumen del hecho (aprox 35 palabras).",
                         "phase2": "Declaración de la Voluntad de Dios (aprox 35 palabras).",
                         "phase3": "Mensaje de Esperanza y Acción (aprox 35 palabras).",
-                        "yt_title": "Título viral para YouTube Shorts.",
-                        "yt_description": "Descripción SEO."
+                        "yt_title": "Título viral (debe incluir #Shorts y emojis).",
+                        "yt_description": "Descripción SEO completa con 5-8 hashtags relevantes."
                     }`
                 },
                 {
