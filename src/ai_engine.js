@@ -14,6 +14,8 @@ async function forgeThemeScript(topic) {
                     role: "system",
                     content: `Eres el Soberano Motor de Sabiduría de MusiChris Studio. Tu misión es actuar como un FILTRO DIVINO con autoridad profética.
                     
+                    ENTREGA SÓLO EL JSON. SIN COMENTARIOS, SIN SALUDOS, SIN MARKDOWN.
+                    
                     REGLAS CRÍTICAS:
                     1. HABLA DIRECTO: No menciones "el artículo", "la noticia", "el link" ni "este texto". No digas "el artículo aborda". Empieza directo con el mensaje.
                     2. SIN ETIQUETAS: No incluyas títulos como "Declaración de la Voluntad de Dios" o "Mensaje de Esperanza". Solo escribe el contenido puro.
@@ -45,17 +47,18 @@ async function forgeThemeScript(topic) {
         let content = response.data.choices[0].message.content;
         console.log("📥 Respuesta recibida del motor...");
         
-        // Extracción robusta de JSON
+        // Extracción robusta de JSON con limpieza de Markdown
+        content = content.replace(/```json/g, '').replace(/```/g, '').trim();
         const firstBrace = content.indexOf('{');
         const lastBrace = content.lastIndexOf('}');
         
         if (firstBrace === -1 || lastBrace === -1) {
-            console.error("❌ No se encontró un objeto JSON válido en la respuesta.");
-            throw new Error("Respuesta de IA malformada.");
+            console.error("❌ Respuesta cruda de la IA:", content);
+            throw new Error("No se pudo extraer JSON de la respuesta.");
         }
 
-        content = content.substring(firstBrace, lastBrace + 1);
-        return JSON.parse(content);
+        const jsonString = content.substring(firstBrace, lastBrace + 1);
+        return JSON.parse(jsonString);
 
     } catch (error) {
         console.error("❌ Error en la Forja IA:", error.response?.data || error.message);
