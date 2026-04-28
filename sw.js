@@ -1,4 +1,4 @@
-const CACHE_NAME = 'musichris-themes-v1';
+const CACHE_NAME = 'musichris-themes-v2';
 const ASSETS = [
   './',
   'index.html',
