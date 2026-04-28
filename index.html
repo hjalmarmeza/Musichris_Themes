@@ -265,14 +265,16 @@
             font-size: 12px;
             color: var(--accent);
             letter-spacing: 2px;
-            opacity: 0.7;
+            opacity: 0.9;
+            text-shadow: 0 0 10px rgba(0, 242, 255, 0.5);
         }
 
         .phase-card p {
             margin: 0;
             font-size: 15px;
-            line-height: 1.5;
-            color: rgba(255,255,255,0.9);
+            line-height: 1.6;
+            color: rgba(255,255,255,1);
+            font-weight: 300;
         }
 
         .status-badge {
@@ -484,7 +486,7 @@
                     body: JSON.stringify({
                         model: "llama3.1-70b",
                         messages: [
-                            { role: "system", content: "Eres el motor de sabiduría ministerial 'MusiChris Themes'. Transforma noticias o links en 3 fases de reflexión cristiana profunda para YouTube Shorts. Formato JSON: {phase1, phase2, phase3, yt_title, yt_description}" },
+                            { role: "system", content: "Eres el motor de sabiduría ministerial 'MusiChris Themes'. Transforma noticias o links en 3 fases de reflexión cristiana profunda para YouTube Shorts. \n\nREGLAS CRÍTICAS:\n1. Títulos: Deben ser virales, cortos y SIEMPRE incluir '#Shorts' y emojis.\n2. Descripción: Incluye un resumen impactante y 5-8 hashtags relevantes.\n3. Formato JSON: {phase1, phase2, phase3, yt_title, yt_description}" },
                             { role: "user", content: `Noticia: ${content}` }
                         ],
                         response_format: { type: "json_object" }
