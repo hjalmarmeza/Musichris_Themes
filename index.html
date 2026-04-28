@@ -51,6 +51,7 @@
             background-size: cover;
             background-position: center;
             background-attachment: fixed;
+            touch-action: pan-y; /* Evita el scroll horizontal táctil */
         }
 
         body::before {
@@ -77,7 +78,7 @@
             backdrop-filter: blur(10px);
             -webkit-backdrop-filter: blur(10px);
             font-size: 28px;
-            display: flex;
+            display: none; /* Oculto inicialmente */
             align-items: center;
             justify-content: center;
             transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
@@ -437,7 +438,6 @@
                 <h4>CIERRE MINISTERIAL</h4>
                 <p id="p4">...</p>
             </div>
-            <button class="forge-btn" style="background: white; color: black; margin-top: 20px;" onclick="renderVideo()">Confirmar y Renderizar</button>
         </div>
 
         <div class="status-badge" id="status">
@@ -541,7 +541,9 @@
             const splash = document.getElementById('splash-screen');
             splash.classList.add('fade-out');
             
-            // Eliminar del DOM tras la animación para evitar bloqueos táctiles
+            // Mostrar botón de ajustes solo después de entrar
+            document.getElementById('btn-settings').style.display = 'flex';
+            
             setTimeout(() => {
                 splash.style.display = 'none';
             }, 800);
