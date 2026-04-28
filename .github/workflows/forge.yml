@@ -1,0 +1,45 @@
+name: 💎 MusiChris Themes Forge
+
+on:
+  workflow_dispatch:
+    inputs:
+      theme:
+        description: 'Noticia, Link o Comentario para la Forja'
+        required: true
+        default: ''
+
+jobs:
+  forge:
+    runs-on: ubuntu-latest
+    steps:
+      - name: 📥 Checkout Code
+        uses: actions/checkout@v3
+
+      - name: 🐍 Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.9'
+
+      - name: 🟢 Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'
+
+      - name: 🎥 Install FFmpeg
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y ffmpeg
+
+      - name: 📦 Install Dependencies
+        run: |
+          npm install
+          pip install google-auth-oauthlib google-api-python-client Pillow
+
+      - name: 🔐 Reconstruct Credentials
+        run: |
+          echo "${{ secrets.YOUTUBE_CLIENT_SECRETS_BASE64 }}" | base64 -d > src/client_secrets.json
+          echo "${{ secrets.YOUTUBE_TOKEN_BASE64 }}" | base64 -d > src/token.pickle
+          echo "CEREBRAS_API_KEY=${{ secrets.CEREBRAS_API_KEY }}" > .env
+
+      - name: 🚀 Forge, Render & Publish
+        run: node src/forge_dispatch.js "${{ github.event.inputs.theme }}"
