@@ -355,10 +355,21 @@
 
         footer {
             margin-top: auto;
-            padding: 40px;
+            padding: 20px;
             color: var(--text-dim);
-            font-size: 12px;
+            font-size: 10px;
             letter-spacing: 2px;
+            text-align: center;
+        }
+
+        .version-tag {
+            display: inline-block;
+            margin-top: 5px;
+            padding: 2px 8px;
+            background: rgba(255,255,255,0.05);
+            border-radius: 10px;
+            font-size: 9px;
+            color: var(--accent);
         }
     </style>
 </head>
@@ -423,7 +434,8 @@
     </div>
 
     <footer>
-        &copy; 2026 MUSICHRIS STUDIO | POWERED BY ANTIGRAVITY
+        &copy; 2026 MUSICHRIS STUDIO | POWERED BY ANTIGRAVITY<br>
+        <span class="version-tag" id="app-version">v1.2.0 - Diamond Flow</span>
     </footer>
 
     <script>
@@ -562,14 +574,37 @@
             }
         }
 
-        // Registrar Service Worker para PWA
+        // Registrar Service Worker para PWA con Auto-Update
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
                 navigator.serviceWorker.register('./sw.js')
-                    .then(reg => console.log('🚀 Service Worker registrado!', reg))
+                    .then(reg => {
+                        console.log('🚀 Service Worker registrado!', reg);
+                        
+                        // Detectar actualizaciones
+                        reg.onupdatefound = () => {
+                            const installingWorker = reg.installing;
+                            installingWorker.onstatechange = () => {
+                                if (installingWorker.state === 'installed' && navigator.serviceWorker.controller) {
+                                    console.log('✨ Nueva versión detectada. Recargando...');
+                                    window.location.reload();
+                                }
+                            };
+                        };
+                    })
                     .catch(err => console.log('❌ Error al registrar SW', err));
             });
         }
+
+        // Verificar versión contra el servidor
+        async function checkVersion() {
+            try {
+                const res = await fetch('version.json?t=' + Date.now());
+                const data = await res.json();
+                console.log('📦 Versión del servidor:', data.version);
+            } catch(e) {}
+        }
+        checkVersion();
     </script>
 </body>
 </html>

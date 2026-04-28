@@ -1,7 +1,8 @@
-const CACHE_NAME = 'musichris-themes-v3';
+const CACHE_NAME = 'musichris-themes-v4';
 const ASSETS = [
   './',
   'index.html',
+  'version.json',
   'assets/logo_app.png',
   'assets/master_template.png'
 ];
@@ -25,7 +26,7 @@ self.addEventListener('activate', (event) => {
           }
         })
       );
-    })
+    }).then(() => self.clients.claim())
   );
 });
 
