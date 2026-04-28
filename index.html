@@ -53,22 +53,24 @@
         /* Settings Button */
         #btn-settings {
             position: fixed;
-            top: 20px;
-            right: 20px;
-            background: rgba(255,255,255,0.1);
-            border: 1px solid var(--glass-border);
+            top: 15px;
+            right: 15px;
+            background: rgba(0, 242, 255, 0.2);
+            border: 1px solid var(--accent);
             color: white;
-            padding: 10px;
+            padding: 15px; /* Área de toque más grande */
             border-radius: 50%;
             cursor: pointer;
-            z-index: 10001; /* Por encima de todo */
+            z-index: 99999; /* Máxima prioridad */
             backdrop-filter: blur(10px);
-            font-size: 20px;
+            -webkit-backdrop-filter: blur(10px);
+            font-size: 24px;
             display: flex;
             align-items: center;
             justify-content: center;
             transition: all 0.3s ease;
             -webkit-tap-highlight-color: transparent;
+            box-shadow: 0 0 15px rgba(0, 242, 255, 0.3);
         }
 
         #btn-settings:hover {
@@ -366,7 +368,7 @@
         <button class="enter-btn" onclick="enterApp()">ENTRAR A LA FORJA</button>
     </div>
 
-    <button id="btn-settings">⚙️</button>
+    <button id="btn-settings" onclick="toggleSettings()" ontouchstart="toggleSettings()">⚙️</button>
 
     <div id="modal-settings" class="modal">
         <div class="modal-content">
@@ -430,13 +432,6 @@
         window.onload = () => {
             document.getElementById('gh-token').value = localStorage.getItem('gh_token') || '';
             document.getElementById('cerebras-key').value = localStorage.getItem('cerebras_key') || '';
-            
-            // Event listener robusto para el engranaje
-            document.getElementById('btn-settings').addEventListener('click', (e) => {
-                e.preventDefault();
-                console.log('Gear clicked');
-                toggleSettings();
-            });
         };
 
         function toggleSettings() {
@@ -556,7 +551,11 @@
             const splash = document.getElementById('splash-screen');
             splash.classList.add('fade-out');
             
-            // Sonido opcional o haptic feedback puede ir aquí
+            // Eliminar del DOM tras la animación para evitar bloqueos táctiles
+            setTimeout(() => {
+                splash.style.display = 'none';
+            }, 800);
+
             if (window.navigator.vibrate) {
                 window.navigator.vibrate(50);
             }
