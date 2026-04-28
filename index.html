@@ -440,7 +440,6 @@
 
     <script>
         let lastForgeData = null;
-
         // Cargar llaves al inicio
         window.onload = () => {
             document.getElementById('gh-token').value = localStorage.getItem('gh_token') || '';
@@ -461,102 +460,67 @@
 
         async function forgeContent() {
             const content = document.getElementById('sourceContent').value;
-            const cKey = localStorage.getItem('cerebras_key');
-            
-            const statusText = document.getElementById('status-text');
-            const statusIcon = document.getElementById('status-icon');
-            const preview = document.getElementById('preview');
-            const p1 = document.getElementById('p1');
-            const p2 = document.getElementById('p2');
-            const p3 = document.getElementById('p3');
-            const p4 = document.getElementById('p4');
-
-            if(!content) return alert('Por favor, pega un contenido o link.');
-            if(!cKey) return alert('Falta Cerebras API Key en Ajustes (⚙️).');
-            
-            statusText.innerText = 'Forjando guion ministerial...';
-            statusIcon.innerText = '✨';
-            preview.style.display = 'block';
-            
-            p1.innerText = 'Consultando oráculo de sabiduría...';
-            p2.innerText = '...';
-            p3.innerText = '...';
-            p4.innerText = '...';
-
-            try {
-                // Llamada directa a Cerebras desde el navegador
-                const response = await fetch('https://api.cerebras.ai/v1/chat/completions', {
-                    method: 'POST',
-                    headers: {
-                        'Authorization': `Bearer ${cKey}`,
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({
-                        model: "llama3.1-70b",
-                        messages: [
-                            { role: "system", content: "Eres el motor de sabiduría ministerial 'MusiChris Themes'. Transforma noticias o links en 3 fases de reflexión cristiana profunda para YouTube Shorts. \n\nREGLAS CRÍTICAS:\n1. Títulos: Deben ser virales, cortos y SIEMPRE incluir '#Shorts' y emojis.\n2. Descripción: Incluye un resumen impactante y 5-8 hashtags relevantes.\n3. Formato JSON: {phase1, phase2, phase3, yt_title, yt_description}" },
-                            { role: "user", content: `Noticia: ${content}` }
-                        ],
-                        response_format: { type: "json_object" }
-                    })
-                });
-
-                if (!response.ok) throw new Error('Fallo en la conexión remota con Cerebras');
-
-                const rawData = await response.json();
-                const data = JSON.parse(rawData.choices[0].message.content);
-                lastForgeData = data;
-                
-                p1.innerText = data.phase1;
-                p2.innerText = data.phase2;
-                p3.innerText = data.phase3;
-                p4.innerText = "@Musichris_Studio\n¡Caminemos juntos en fe!";
-
-                statusText.innerText = 'Forja completada con éxito';
-                statusIcon.innerText = '✅';
-
-            } catch (error) {
-                console.error(error);
-                statusText.innerText = 'Error: ' + error.message;
-                statusIcon.innerText = '❌';
-                p1.innerText = 'No se pudo forjar el contenido remótamente.';
-            }
-        }
-
-        async function renderVideo() {
             const ghToken = localStorage.getItem('gh_token');
-            const content = document.getElementById('sourceContent').value;
+            const statusIcon = document.getElementById('status-icon');
             const statusText = document.getElementById('status-text');
+            const forgeBtn = document.querySelector('.forge-btn');
 
-            if(!ghToken) return alert('Falta GitHub Token en Ajustes (⚙️).');
-            if(!content) return alert('No hay contenido para renderizar.');
+            if (!content) {
+                alert("Por favor, pega un contenido o link.");
+                return;
+            }
 
-            statusText.innerText = 'Despachando orden a la nube (GitHub Actions)...';
-            
+            if (!ghToken) {
+                alert("Falta GitHub Token en Ajustes (⚙️).");
+                toggleSettings();
+                return;
+            }
+
             try {
-                // Trigger GitHub Action vía API
+                forgeBtn.disabled = true;
+                forgeBtn.innerText = "🚀 DESPACHANDO...";
+                statusIcon.innerText = "📡";
+                statusText.innerText = "Conectando con Servidor...";
+
+                // Despacho directo a GitHub Actions (Workflow Dispatch)
                 const response = await fetch('https://api.github.com/repos/hjalmarmeza/Musichris_Themes/actions/workflows/forge.yml/dispatches', {
                     method: 'POST',
                     headers: {
-                        'Authorization': `token ${ghToken}`,
+                        'Authorization': `Bearer ${ghToken}`,
                         'Accept': 'application/vnd.github.v3+json',
                         'Content-Type': 'application/json'
                     },
                     body: JSON.stringify({
                         ref: 'main',
-                        inputs: { theme: content }
+                        inputs: {
+                            theme: content
+                        }
                     })
                 });
 
-                if (!response.ok) throw new Error('Error al conectar con GitHub');
+                if (response.ok) {
+                    statusIcon.innerText = "🔥";
+                    statusText.innerText = "Forja en la Nube Activada";
+                    forgeBtn.innerText = "ORDEN ENVIADA ✅";
+                    alert("¡Misión aceptada! El servidor está procesando tu video. En unos minutos estará publicado en YouTube Shorts.");
+                    
+                    // Mostrar preview simbólico
+                    document.getElementById('preview').style.display = 'block';
+                    document.getElementById('p1').innerText = "Procesando tema: " + content;
+                    document.getElementById('p2').innerText = "IA generando guion ministerial...";
+                    document.getElementById('p3').innerText = "Renderizando video con FFmpeg...";
+                } else {
+                    const errData = await response.json();
+                    throw new Error(errData.message || "Fallo en el servidor");
+                }
 
-                statusText.innerText = '🚀 ¡Orden recibida! Revisa la pestaña Actions en GitHub.';
-                alert('💎 Misión iniciada en la nube. GitHub Actions está fabricando tu video ahora mismo.');
-
-            } catch (error) {
-                console.error(error);
-                statusText.innerText = 'Error al despachar orden.';
-                alert('❌ No se pudo conectar con GitHub Actions. Revisa tu Token.');
+            } catch (err) {
+                console.error(err);
+                statusIcon.innerText = "❌";
+                statusText.innerText = "Fallo de Comunicación";
+                alert("Error: " + err.message);
+                forgeBtn.disabled = false;
+                forgeBtn.innerText = "FORJAR VIDEO";
             }
         }
 
@@ -580,13 +544,10 @@
                 navigator.serviceWorker.register('./sw.js')
                     .then(reg => {
                         console.log('🚀 Service Worker registrado!', reg);
-                        
-                        // Detectar actualizaciones
                         reg.onupdatefound = () => {
                             const installingWorker = reg.installing;
                             installingWorker.onstatechange = () => {
                                 if (installingWorker.state === 'installed' && navigator.serviceWorker.controller) {
-                                    console.log('✨ Nueva versión detectada. Recargando...');
                                     window.location.reload();
                                 }
                             };
@@ -596,7 +557,6 @@
             });
         }
 
-        // Verificar versión contra el servidor
         async function checkVersion() {
             try {
                 const res = await fetch('version.json?t=' + Date.now());
