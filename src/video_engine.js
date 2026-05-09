@@ -1,4 +1,4 @@
-const { execSync } = require('child_process');
+const { execSync, spawnSync } = require('child_process');
 const path = require('path');
 const fs = require('fs');
 
@@ -17,8 +17,13 @@ async function renderThemeVideo(phases, outputName) {
     console.log('🎨 Generando capas gráficas...');
     
     const runGraphics = (title, body, output) => {
-        execSync(`python3 src/graphics_engine.py "${title}" "${body}" "${output}"`);
+        const result = spawnSync('python3', ['src/graphics_engine.py', title, body, output], { encoding: 'utf-8' });
+        if (result.status !== 0) {
+            console.error(`❌ Error en graphics_engine.py:\n${result.stderr}`);
+            throw new Error(`Fallo al generar gráfico: ${output}`);
+        }
     };
+
 
     runGraphics("", phases.phase1, p1Card);
     runGraphics("", phases.phase2, p2Card);
