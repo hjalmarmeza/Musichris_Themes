@@ -22,17 +22,29 @@ async function runForge(content) {
     
     // 3. Publicar en YouTube
     console.log(`📤 Publicando en YouTube Shorts: ${videoTitle}...`);
-    const command = `python3 src/youtube_engine.py "${filePath}" "${videoTitle}" "${videoDesc}"`;
-    const output = execSync(command).toString();
+    
+    const { spawnSync } = require('child_process');
+    const pythonProcess = spawnSync('python3', [
+        'src/youtube_engine.py',
+        filePath,
+        videoTitle,
+        videoDesc
+    ], { encoding: 'utf-8' });
+
+    const output = pythonProcess.stdout || "";
+    const errorOutput = pythonProcess.stderr || "";
 
     console.log(output);
+    if (errorOutput) console.error("⚠️ Log de Python:", errorOutput);
     
     if (output.includes('✅ ÉXITO')) {
         console.log("💎 MISIÓN CUMPLIDA: Video en línea.");
     } else {
+        console.error("❌ Falló la subida. Revisa el log de arriba.");
         throw new Error("Error en la subida a YouTube.");
     }
 }
+
 
 const themeInput = process.argv.slice(2).join(' ');
 if (!themeInput) {

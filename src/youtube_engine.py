@@ -77,10 +77,15 @@ if __name__ == "__main__":
         sys.exit(1)
     
     video_path = sys.argv[1]
-    title = sys.argv[2]
+    # Limpieza de seguridad para YouTube
+    title = sys.argv[2].strip().replace("\n", " ")
+    if len(title) > 95:
+        title = title[:92] + "..."
+    
     description = sys.argv[3]
     
     video_id = upload_theme_video(video_path, title, description)
+
     if video_id:
         print(f"✅ ÉXITO: Video subido con ID: {video_id}")
         print(f"🔗 URL: https://youtu.be/{video_id}")
