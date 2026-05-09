@@ -70,15 +70,17 @@ async function renderThemeVideo(phases, outputName) {
         `-loop 1 -t 60 -i "${p3Card}"`,        // 3
         `-loop 1 -t 60 -i "${p4Card}"`,        // 4
         `-stream_loop -1 -i "${animatedLogo}"`, // 5
-        fs.existsSync(audioPath) ? `-i "${audioPath}"` : '', // 6
+        fs.existsSync(audioPath) ? `-i "${audioPath}"` : '', // 6 (Condicional)
         `-filter_complex "${filter}"`,
         '-map "[v]"',
-        fs.existsSync(audioPath) ? '-map 6:a -t 60' : '',
+        (fs.existsSync(audioPath) && audioPath !== "") ? `-map 6:a -t 60` : '-t 60', // Blindaje de mapeo
         '-c:v libx264 -preset fast -pix_fmt yuv420p -shortest',
         `"${finalOutput}"`
-    ].join(' ');
+    ].filter(arg => arg !== '').join(' ');
 
+    console.log(`🎬 Ejecutando: ${ffmpegCmd}`);
     execSync(ffmpegCmd);
+
 
     // Cleanup temp cards
     fs.unlinkSync(p1Card);
