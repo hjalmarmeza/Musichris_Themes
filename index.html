@@ -397,15 +397,30 @@
     <button id="btn-settings" onclick="toggleSettings()" ontouchstart="toggleSettings()">⚙️</button>
 
     <div id="modal-settings" class="modal">
-        <div class="modal-content">
-            <h3>DIAMOND CONTROL</h3>
-            <p>Configura tus llaves para producción remota.</p>
-            <input type="password" id="gh-token" placeholder="GitHub PAT (ghp_...)" class="input-box">
-            <input type="password" id="cerebras-key" placeholder="Cerebras API Key (csk_...)" class="input-box">
+        <div class="modal-content" style="text-align: left; max-width: 400px;">
+            <h3 style="text-align: center;">DIAMOND CONTROL</h3>
+            <p style="text-align: center; font-size: 12px; margin-bottom: 20px;">Configuración de Enlace y Motores IA</p>
+            
+            <div style="margin-bottom: 15px;">
+                <label style="display: block; margin-bottom: 5px;">GitHub Access Token (Control Remoto)</label>
+                <input type="password" id="gh-token" placeholder="ghp_..." class="input-box" style="width: 100%; box-sizing: border-box;">
+            </div>
+
+            <div style="margin-bottom: 15px;">
+                <label style="display: block; margin-bottom: 5px;">Cerebras API Key (Motor Primario)</label>
+                <input type="password" id="cerebras-key" placeholder="csk_..." class="input-box" style="width: 100%; box-sizing: border-box;">
+            </div>
+
+            <div style="margin-bottom: 15px;">
+                <label style="display: block; margin-bottom: 5px;">DeepInfra API Key (Respaldo)</label>
+                <input type="password" id="deepinfra-key" placeholder="deepinfra_..." class="input-box" style="width: 100%; box-sizing: border-box;">
+            </div>
+
             <button class="forge-btn" onclick="saveSettings()">GUARDAR CONFIGURACIÓN</button>
             <button class="forge-btn" style="background: transparent; border: 1px solid #444; color: #888; margin-top: 10px;" onclick="toggleSettings()">CERRAR</button>
         </div>
     </div>
+
 
     <header>
         <div class="logo-area">
@@ -457,6 +472,7 @@
         window.onload = () => {
             document.getElementById('gh-token').value = localStorage.getItem('gh_token') || '';
             document.getElementById('cerebras-key').value = localStorage.getItem('cerebras_key') || '';
+            document.getElementById('deepinfra-key').value = localStorage.getItem('deepinfra_key') || '';
         };
 
         function toggleSettings() {
@@ -467,6 +483,7 @@
         function saveSettings() {
             localStorage.setItem('gh_token', document.getElementById('gh-token').value);
             localStorage.setItem('cerebras_key', document.getElementById('cerebras-key').value);
+            localStorage.setItem('deepinfra_key', document.getElementById('deepinfra-key').value);
             alert('✅ Configuración guardada con éxito.');
             toggleSettings();
         }
