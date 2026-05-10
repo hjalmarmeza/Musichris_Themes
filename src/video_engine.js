@@ -32,7 +32,7 @@ async function renderThemeVideo(phases, outputName) {
     runGraphics("CIERRE", "", p4Card, phases.theme_color);
 
     console.log('🎞️  Iniciando renderizado FFmpeg con Logo Animado...');
-    const animatedLogo = path.join(assetsDir, 'Logo Hjalmar Animado.mp4');
+    const animatedLogo = path.join(assetsDir, 'music/Logo Hjalmar Animado.mp4');
 
     // Dynamic Background Selection
     let bgVideo = path.join(assetsDir, 'Fondo_theme.mp4');
