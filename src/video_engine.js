@@ -72,9 +72,9 @@ async function renderThemeVideo(phases, outputName) {
         }
     }
 
-    // Filter complex with smooth FADE transitions (1s fade in/out)
+    // Filter complex with smooth FADE transitions (1s fade in/out) and Ken Burns Background
     const filter = `
-        [0:v] scale=1080:1920:force_original_aspect_ratio=increase,crop=1080:1920,setsar=1 [bg];
+        [0:v] scale=1080*1.4:1920*1.4:force_original_aspect_ratio=increase,zoompan=z='zoom+0.0003':x='iw/2-(iw/zoom/2)':y='ih/2-(ih/zoom/2)':d=1:s=1080x1920,setsar=1 [bg];
         [1:v] format=rgba,fade=t=in:st=0:d=1:alpha=1,fade=t=out:st=15:d=1:alpha=1 [c1];
         [2:v] format=rgba,fade=t=in:st=16:d=1:alpha=1,fade=t=out:st=31:d=1:alpha=1 [c2];
         [3:v] format=rgba,fade=t=in:st=32:d=1:alpha=1,fade=t=out:st=47:d=1:alpha=1 [c3];

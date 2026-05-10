@@ -10,10 +10,14 @@ async function runForge(content) {
     
     // 1. Forjar guion
     const phases = await forgeThemeScript(content);
-    const videoTitle = (phases.yt_title || phases.title || "MusiChris Theme Video").replace(/"/g, "'");
-    const videoDesc = (phases.yt_description || phases.description || "").replace(/"/g, "'");
+    
+    // Función de blindaje para metadatos
+    const sanitize = (text) => text ? text.replace(/"/g, "'").replace(/[\r\n]+/g, " ").trim() : "";
 
-    console.log(`✅ Guion forjado con éxito: ${videoTitle}`);
+    const videoTitle = sanitize(phases.yt_title || phases.title || "MusiChris Theme Video");
+    const videoDesc = sanitize(phases.yt_description || phases.description || "");
+
+    console.log(`✅ Guion forjado y blindado: ${videoTitle}`);
     
     // 2. Renderizar video
     const outputName = `THEME_${Date.now()}.mp4`;
