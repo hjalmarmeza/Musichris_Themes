@@ -34,27 +34,33 @@ async function renderThemeVideo(phases, outputName) {
     console.log('🎞️  Iniciando renderizado FFmpeg con Logo Animado...');
     const animatedLogo = path.join(assetsDir, 'music/Logo Hjalmar Animado.mp4');
 
-    // Dynamic Background Selection
+    // Dynamic Background Selection (Recursive search)
     let bgVideo = path.join(assetsDir, 'Fondo_theme.mp4');
     const backgroundsDir = path.join(assetsDir, 'backgrounds');
     
-    let potentialBGs = [];
-    if (fs.existsSync(backgroundsDir)) {
-        potentialBGs = fs.readdirSync(backgroundsDir).filter(f => f.endsWith('.mp4'));
+    function getFilesRecursively(dir) {
+        let results = [];
+        if (!fs.existsSync(dir)) return results;
+        const list = fs.readdirSync(dir);
+        list.forEach(file => {
+            const filePath = path.join(dir, file);
+            const stat = fs.statSync(filePath);
+            if (stat && stat.isDirectory()) {
+                results = results.concat(getFilesRecursively(filePath));
+            } else if (file.endsWith('.mp4')) {
+                results.push(filePath);
+            }
+        });
+        return results;
     }
 
+    const potentialBGs = getFilesRecursively(backgroundsDir);
+
     if (potentialBGs.length > 0) {
-        const randomBG = potentialBGs[Math.floor(Math.random() * potentialBGs.length)];
-        bgVideo = path.join(backgroundsDir, randomBG);
-        console.log(`🌍 Fondo Internacional seleccionado: ${randomBG}`);
+        bgVideo = potentialBGs[Math.floor(Math.random() * potentialBGs.length)];
+        console.log(`🌍 Fondo Internacional Detectado: ${bgVideo}`);
     } else {
-        // Fallback a assets raíz (excluyendo logos)
-        const rootBGs = fs.readdirSync(assetsDir).filter(f => f.endsWith('.mp4') && !f.includes('Logo'));
-        if (rootBGs.length > 0) {
-            const randomBG = rootBGs[Math.floor(Math.random() * rootBGs.length)];
-            bgVideo = path.join(assetsDir, randomBG);
-            console.log(`🎬 Fondo local seleccionado: ${randomBG}`);
-        }
+        console.log(`⚠️ No se detectaron fondos en backgrounds/, usando fallback.`);
     }
     
     // Audio Selection
@@ -72,9 +78,12 @@ async function renderThemeVideo(phases, outputName) {
         }
     }
 
-    // Filter complex with smooth FADE transitions (1s fade in/out) and Ken Burns Background
+    // Filter complex with Ultra-Smooth Premium Zoom & FADE transitions
+    // Efecto Ken Burns Real: Zoom progresivo del 10% durante los 60 segundos
     const filter = `
-        [0:v] scale=1080*1.4:1920*1.4:force_original_aspect_ratio=increase,zoompan=z='zoom+0.0003':x='iw/2-(iw/zoom/2)':y='ih/2-(ih/zoom/2)':d=1:s=1080x1920,setsar=1 [bg];
+        [0:v] scale=1080*1.5:-1,
+              zoompan=z='zoom+0.0002':x='iw/2-(iw/zoom/2)':y='ih/2-(ih/zoom/2)':d=1:s=1080x1920:fps=30,
+              setsar=1 [bg];
         [1:v] format=rgba,fade=t=in:st=0:d=1:alpha=1,fade=t=out:st=15:d=1:alpha=1 [c1];
         [2:v] format=rgba,fade=t=in:st=16:d=1:alpha=1,fade=t=out:st=31:d=1:alpha=1 [c2];
         [3:v] format=rgba,fade=t=in:st=32:d=1:alpha=1,fade=t=out:st=47:d=1:alpha=1 [c3];
