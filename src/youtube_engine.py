@@ -40,18 +40,21 @@ def get_authenticated_service():
 
     return build('youtube', 'v3', credentials=credentials)
 
-def upload_theme_video(video_path, title, description):
+def upload_theme_video(video_path, title, description, tags=None):
     print(f"🚀 Iniciando subida a YouTube: {title}")
     youtube = get_authenticated_service()
     if not youtube:
         print("❌ Error de autenticación. Asegúrate de tener client_secrets.json en src/")
         return None
 
+    if not tags:
+        tags = ['MusiChris', 'Sabiduría', 'Reflexión', 'Fe']
+
     body = {
         'snippet': {
             'title': title,
             'description': description,
-            'tags': ['MusiChris', 'Sabiduría', 'Reflexión', 'Fe'],
+            'tags': tags,
             'categoryId': '22' # People & Blogs
         },
         'status': {
@@ -73,7 +76,7 @@ def upload_theme_video(video_path, title, description):
 
 if __name__ == "__main__":
     if len(sys.argv) < 4:
-        print("Uso: python3 youtube_engine.py <video_path> <titulo> <descripcion>")
+        print("Uso: python3 youtube_engine.py <video_path> <titulo> <descripcion> <tags_comma_separated>")
         sys.exit(1)
     
     video_path = sys.argv[1]
@@ -83,8 +86,9 @@ if __name__ == "__main__":
         title = title[:92] + "..."
     
     description = sys.argv[3]
+    tags = sys.argv[4].split(',') if len(sys.argv) > 4 else None
     
-    video_id = upload_theme_video(video_path, title, description)
+    video_id = upload_theme_video(video_path, title, description, tags)
 
     if video_id:
         print(f"✅ ÉXITO: Video subido con ID: {video_id}")

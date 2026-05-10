@@ -2,7 +2,7 @@ import os
 import sys
 from PIL import Image, ImageDraw, ImageFont
 
-def generate_phase_card(title, body, output_path, width=1080, height=1920):
+def generate_phase_card(title, body, output_path, accent_color="#00f2ff", width=1080, height=1920):
     # Canvas transparente
     img = Image.new('RGBA', (width, height), (0, 0, 0, 0))
     draw = ImageDraw.Draw(img)
@@ -35,8 +35,11 @@ def generate_phase_card(title, body, output_path, width=1080, height=1920):
         btn_x = (width - btn_w) // 2
         btn_y = 1500
         
-        # Sombra/Fondo del botón (Pill shape)
+        # Sombra/Fondo del botón (Pill shape) con color de acento sutil
         draw.rounded_rectangle([btn_x, btn_y, btn_x + btn_w, btn_y + btn_h], radius=50, fill=(0, 0, 0, 160))
+        # Línea de acento inferior en el botón
+        draw.line([btn_x + 50, btn_y + btn_h - 5, btn_x + btn_w - 50, btn_y + btn_h - 5], fill=accent_color, width=3)
+        
         draw.text(((width - w_b) // 2, btn_y + 25), btn_text, font=font_button, fill="white")
         
         img.save(output_path)
@@ -87,19 +90,18 @@ def generate_phase_card(title, body, output_path, width=1080, height=1920):
     y_cursor = repo_y_start + (repo_height - total_text_h) // 2
     
     # --- DIAMOND GLASS CONTAINER ---
-    # Dibujar un recuadro de cristal semitransparente para dar profundidad
     padding = 60
     box_rect = [repo_x_start - padding, repo_y_start - padding, repo_x_start + repo_width + padding, repo_y_start + repo_height + padding]
     
     # 1. Sombra exterior
     draw.rounded_rectangle(box_rect, radius=40, fill=(0, 0, 0, 180))
-    # 2. Borde (Eliminado por petición para mayor limpieza visual)
-    # draw.rounded_rectangle(box_rect, radius=40, outline="#00f2ff", width=3)
+    # 2. Borde sutil con el color de acento
+    draw.rounded_rectangle(box_rect, radius=40, outline=accent_color, width=2)
     
     # Dibujar Título (Solo si no está vacío)
     if title and title.strip():
         w_t = draw.textbbox((0, 0), title, font=font_t)[2]
-        draw.text(((width - w_t) // 2, y_cursor), title, font=font_t, fill="#00f2ff")
+        draw.text(((width - w_t) // 2, y_cursor), title, font=font_t, fill=accent_color)
         y_cursor += 80
 
     # Dibujar Cuerpo
@@ -115,4 +117,10 @@ def generate_phase_card(title, body, output_path, width=1080, height=1920):
 if __name__ == "__main__":
     if len(sys.argv) < 4:
         sys.exit(1)
-    generate_phase_card(sys.argv[1], sys.argv[2], sys.argv[3])
+    
+    title = sys.argv[1]
+    body = sys.argv[2]
+    output = sys.argv[3]
+    accent = sys.argv[4] if len(sys.argv) > 4 else "#00f2ff"
+    
+    generate_phase_card(title, body, output, accent)

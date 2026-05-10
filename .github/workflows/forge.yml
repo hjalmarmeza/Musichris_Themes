@@ -33,7 +33,13 @@ jobs:
       - name: 📦 Install Dependencies
         run: |
           npm install
-          pip install google-auth-oauthlib google-api-python-client Pillow
+          pip install google-auth-oauthlib google-api-python-client Pillow gdown
+
+      - name: 🌍 Abastecimiento de Paisajes
+        run: |
+          mkdir -p assets/backgrounds
+          # Descarga la carpeta de Google Drive directamente a assets/backgrounds
+          gdown --folder --id 13phD_lCgjsFcKXwkLmpAUxtG27GBfhRO -O assets/backgrounds/ --remaining-ok
 
       - name: 🔐 Reconstruct Credentials
         run: |

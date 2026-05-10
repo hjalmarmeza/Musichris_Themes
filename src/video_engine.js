@@ -16,8 +16,8 @@ async function renderThemeVideo(phases, outputName) {
 
     console.log('🎨 Generando capas gráficas...');
     
-    const runGraphics = (title, body, output) => {
-        const result = spawnSync('python3', ['src/graphics_engine.py', title, body, output], { encoding: 'utf-8' });
+    const runGraphics = (title, body, output, color) => {
+        const result = spawnSync('python3', ['src/graphics_engine.py', title, body, output, color || "#00f2ff"], { encoding: 'utf-8' });
         if (result.status !== 0) {
             console.error(`❌ Error en graphics_engine.py:\n${result.stderr}`);
             throw new Error(`Fallo al generar gráfico: ${output}`);
@@ -25,17 +25,37 @@ async function renderThemeVideo(phases, outputName) {
     };
 
 
-    runGraphics("", phases.phase1, p1Card);
-    runGraphics("", phases.phase2, p2Card);
-    runGraphics("", phases.phase3, p3Card);
+    runGraphics("", phases.phase1, p1Card, phases.theme_color);
+    runGraphics("", phases.phase2, p2Card, phases.theme_color);
+    runGraphics("", phases.phase3, p3Card, phases.theme_color);
     // Cierre con layout especial WOW Premium
-    runGraphics("CIERRE", "", p4Card);
+    runGraphics("CIERRE", "", p4Card, phases.theme_color);
 
     console.log('🎞️  Iniciando renderizado FFmpeg con Logo Animado...');
+    const animatedLogo = path.join(assetsDir, 'Logo Hjalmar Animado.mp4');
 
-    // Template and assets
-    const bgVideo = path.join(assetsDir, 'Fondo_theme.mp4');
-    const animatedLogo = path.join(assetsDir, 'music/Logo Hjalmar Animado.mp4');
+    // Dynamic Background Selection
+    let bgVideo = path.join(assetsDir, 'Fondo_theme.mp4');
+    const backgroundsDir = path.join(assetsDir, 'backgrounds');
+    
+    let potentialBGs = [];
+    if (fs.existsSync(backgroundsDir)) {
+        potentialBGs = fs.readdirSync(backgroundsDir).filter(f => f.endsWith('.mp4'));
+    }
+
+    if (potentialBGs.length > 0) {
+        const randomBG = potentialBGs[Math.floor(Math.random() * potentialBGs.length)];
+        bgVideo = path.join(backgroundsDir, randomBG);
+        console.log(`🌍 Fondo Internacional seleccionado: ${randomBG}`);
+    } else {
+        // Fallback a assets raíz (excluyendo logos)
+        const rootBGs = fs.readdirSync(assetsDir).filter(f => f.endsWith('.mp4') && !f.includes('Logo'));
+        if (rootBGs.length > 0) {
+            const randomBG = rootBGs[Math.floor(Math.random() * rootBGs.length)];
+            bgVideo = path.join(assetsDir, randomBG);
+            console.log(`🎬 Fondo local seleccionado: ${randomBG}`);
+        }
+    }
     
     // Audio Selection
     const musicDir = path.join(assetsDir, 'music');

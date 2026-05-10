@@ -23,12 +23,14 @@ async function runForge(content) {
     // 3. Publicar en YouTube
     console.log(`📤 Publicando en YouTube Shorts: ${videoTitle}...`);
     
+    const videoTags = (phases.yt_tags || []).join(',');
     const { spawnSync } = require('child_process');
     const pythonProcess = spawnSync('python3', [
         'src/youtube_engine.py',
         filePath,
         videoTitle,
-        videoDesc
+        videoDesc,
+        videoTags
     ], { encoding: 'utf-8' });
 
     const output = pythonProcess.stdout || "";
