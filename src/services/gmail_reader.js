@@ -9,9 +9,25 @@ async function getLatestDevocional() {
     const credentials = JSON.parse(process.env.YOUTUBE_CREDENTIALS_JSON || fs.readFileSync(credPath));
     const { client_secret, client_id, redirect_uris } = credentials.installed || credentials.web;
     const oAuth2Client = new google.auth.OAuth2(client_id, client_secret, redirect_uris[0]);
-    
-    const token = JSON.parse(process.env.YOUTUBE_TOKEN_JSON || fs.readFileSync('token.json'));
-    oAuth2Client.setCredentials(token);
+        let tokenData;
+        const rawToken = process.env.YOUTUBE_TOKEN_JSON;
+        
+        if (rawToken) {
+            try {
+                // Intento 1: ¿Es JSON directo?
+                tokenData = JSON.parse(rawToken);
+            } catch (e) {
+                // Intento 2: ¿Es Base64?
+                try {
+                    tokenData = JSON.parse(Buffer.from(rawToken, 'base64').toString());
+                } catch (e2) {
+                    throw new Error("El secreto YOUTUBE_TOKEN_JSON no tiene un formato válido (ni JSON ni Base64)");
+                }
+            }
+        } else {
+            tokenData = require('../../token.json');
+        }
+    oAuth2Client.setCredentials(tokenData);
 
     const gmail = google.gmail({ version: 'v1', auth: oAuth2Client });
 
