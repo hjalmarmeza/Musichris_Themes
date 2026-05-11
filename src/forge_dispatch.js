@@ -1,15 +1,31 @@
 const { forgeThemeScript } = require('./ai_engine');
 const { renderThemeVideo } = require('./video_engine');
+const { getLatestDevocional } = require('./services/gmail_reader');
 const { execSync } = require('child_process');
 const dotenv = require('dotenv');
 dotenv.config();
 
-async function runForge(content) {
-    console.log(`🚀 Iniciando Forja Ministerial desde GitHub Actions...`);
-    console.log(`📝 Tema: ${content}`);
+async function runForge(manualContent) {
+    console.log(`🚀 Iniciando Forja Ministerial MusiChris...`);
+    
+    let contentToForge = manualContent;
+
+    // Si no hay contenido manual, buscamos en Gmail
+    if (!contentToForge || contentToForge.trim() === "") {
+        console.log("🤖 Modo Automático: Buscando devocional en Gmail...");
+        const devocional = await getLatestDevocional();
+        if (devocional) {
+            contentToForge = `TÍTULO: ${devocional.title}\n\nCONTENIDO: ${devocional.content}`;
+        } else {
+            console.error("❌ No se encontró devocional en Gmail y no hay tema manual. Abortando.");
+            process.exit(1);
+        }
+    }
+
+    console.log(`📝 Procesando contenido:\n${contentToForge.substring(0, 200)}...`);
     
     // 1. Forjar guion
-    const phases = await forgeThemeScript(content);
+    const phases = await forgeThemeScript(contentToForge);
     
     // Función de blindaje para metadatos
     const sanitize = (text) => text ? text.replace(/"/g, "'").replace(/[\r\n]+/g, " ").trim() : "";
@@ -25,7 +41,7 @@ async function runForge(content) {
     console.log(`✅ Video renderizado con éxito en: ${filePath}`);
     
     // 3. Publicar en YouTube
-    console.log(`📤 Publicando en YouTube Shorts: ${videoTitle}...`);
+    console.log(`📤 Publicando en YouTube: ${videoTitle}...`);
     
     const videoTags = (phases.yt_tags || []).join(',');
     const { spawnSync } = require('child_process');
@@ -53,11 +69,6 @@ async function runForge(content) {
 
 
 const themeInput = process.argv.slice(2).join(' ');
-if (!themeInput) {
-    console.error("❌ Error: Debes proporcionar un tema o noticia para la forja.");
-    process.exit(1);
-}
-
 runForge(themeInput).catch(err => {
     console.error("❌ Error en el proceso:", err);
     process.exit(1);
