@@ -42,13 +42,14 @@ async function getLatestDevocional() {
         const messageDate = new Date(internalDate);
         const today = new Date();
 
-        // VALIDACIÓN DE SEGURIDAD: Solo correos de HOY (mismo día y mes)
+        /* VALIDACIÓN DE SEGURIDAD TEMPORALMENTE DESACTIVADA PARA PRUEBA
         if (messageDate.getUTCDate() !== today.getUTCDate() || 
             messageDate.getUTCMonth() !== today.getUTCMonth()) {
             console.log(`⚠️ Seguridad: El correo más reciente es del ${messageDate.toLocaleDateString()}, pero hoy es ${today.toLocaleDateString()}.`);
             console.log("Abortando para evitar publicar contenido antiguo.");
             return null;
         }
+        */
 
         // El cuerpo puede venir en diferentes formatos (plain o html)
         let body = '';
