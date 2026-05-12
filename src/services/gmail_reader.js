@@ -31,16 +31,16 @@ async function getLatestDevocional() {
 
     const gmail = google.gmail({ version: 'v1', auth: oAuth2Client });
 
-    try {
-        // 2. Buscar correos del remitente específico
+        try {
+        // 2. Buscar correos del remitente específico (filtrado al 7 de mayo de 2026)
         const res = await gmail.users.messages.list({
             userId: 'me',
-            q: 'from:devocional@vnpem.org.mx',
+            q: 'from:devocional@vnpem.org.mx after:2026/05/06 before:2026/05/08',
             maxResults: 1
         });
 
         if (!res.data.messages || res.data.messages.length === 0) {
-            console.log('⚠️ No se encontraron correos de este remitente.');
+            console.log('⚠️ No se encontraron correos de este remitente el 7 de mayo.');
             return null;
         }
 
