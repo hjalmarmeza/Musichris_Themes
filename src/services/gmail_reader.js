@@ -65,13 +65,15 @@ async function getLatestDevocional() {
         const messageDate = new Date(internalDate);
         const today = new Date();
 
-        // VALIDACIÓN DE SEGURIDAD: Comprobar que el correo es de HOY
-        if (messageDate.getUTCDate() !== today.getUTCDate() || 
-            messageDate.getUTCMonth() !== today.getUTCMonth()) {
-            console.log(`⚠️ Seguridad: El correo más reciente es del ${messageDate.toLocaleDateString()}, pero hoy es ${today.toLocaleDateString()}.`);
+        // VALIDACIÓN DE SEGURIDAD: Comprobar que el correo es RECIENTE (últimas 24 horas)
+        const diffHoras = (today - messageDate) / (1000 * 60 * 60);
+        
+        if (diffHoras > 24) {
+            console.log(`⚠️ Seguridad: El correo más reciente tiene ${Math.round(diffHoras)} horas de antigüedad.`);
             console.log("Abortando para evitar publicar contenido antiguo.");
             return null;
         }
+        console.log(`✅ Correo validado (Antigüedad: ${Math.round(diffHoras)} horas).`);
 
         // El cuerpo puede venir en diferentes formatos (plain o html)
         let body = '';
