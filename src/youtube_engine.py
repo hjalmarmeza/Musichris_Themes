@@ -9,34 +9,46 @@ from googleapiclient.http import MediaFileUpload
 # Alcances para la API de YouTube
 SCOPES = ['https://www.googleapis.com/auth/youtube.upload']
 
+from google.oauth2.credentials import Credentials
+import json
+
 def get_authenticated_service():
     credentials = None
-    # Localización de tokens en Musichris_Theme/src
-    base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-    token_path = os.path.join(base_dir, 'src', 'token.pickle')
-    secrets_path = os.path.join(base_dir, 'src', 'client_secrets.json')
-
-    # 1. Intentar cargar desde pickle local
-    if os.path.exists(token_path):
-        with open(token_path, 'rb') as token:
-            credentials = pickle.load(token)
     
-    # 2. Refrescar si es necesario o iniciar flujo
+    # Intentar cargar desde la variable de entorno unificada YOUTUBE_TOKEN_JSON
+    token_json_str = os.environ.get('YOUTUBE_TOKEN_JSON')
+    if token_json_str:
+        try:
+            # Podría venir en JSON directo o en Base64, intentamos ambos
+            try:
+                token_data = json.loads(token_json_str)
+            except:
+                import base64
+                token_data = json.loads(base64.b64decode(token_json_str).decode('utf-8'))
+                
+            # Agregamos client_id y client_secret al token_data si faltan
+            cred_json_str = os.environ.get('YOUTUBE_CREDENTIALS_JSON')
+            if cred_json_str:
+                client_secrets = json.loads(cred_json_str)
+                installed = client_secrets.get('installed', client_secrets.get('web', {}))
+                token_data['client_id'] = installed.get('client_id')
+                token_data['client_secret'] = installed.get('client_secret')
+                
+            credentials = Credentials.from_authorized_user_info(token_data, SCOPES)
+        except Exception as e:
+            print(f"⚠️ Error cargando token JSON: {e}")
+
+    # Si no se pudo desde entorno, intentar flujo local (fallback)
     if not credentials or not credentials.valid:
         if credentials and credentials.expired and credentials.refresh_token:
             try:
                 credentials.refresh(Request())
             except:
                 credentials = None
-        
-        if not credentials:
-            if os.path.exists(secrets_path):
-                flow = InstalledAppFlow.from_client_secrets_file(secrets_path, SCOPES)
-                credentials = flow.run_local_server(port=0)
-                with open(token_path, 'wb') as token:
-                    pickle.dump(credentials, token)
-            else:
-                return None
+
+    if not credentials:
+        print("❌ Error de autenticación profunda: No se pudo cargar o refrescar el token.")
+        return None
 
     return build('youtube', 'v3', credentials=credentials)
 
