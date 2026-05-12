@@ -17,8 +17,19 @@ def get_authenticated_service():
     
     # Intentar cargar desde la variable de entorno unificada YOUTUBE_TOKEN_JSON
     token_json_str = os.environ.get('YOUTUBE_TOKEN_JSON')
+    cred_json_str = os.environ.get('YOUTUBE_CREDENTIALS_JSON')
+
+    def clean_secret(val):
+        if not val: return val
+        val = val.strip()
+        if val.startswith("```json"): val = val[7:]
+        if val.startswith("```"): val = val[3:]
+        if val.endswith("```"): val = val[:-3]
+        return val.strip()
+
     if token_json_str:
         try:
+            token_json_str = clean_secret(token_json_str)
             # Podría venir en JSON directo o en Base64, intentamos ambos
             try:
                 token_data = json.loads(token_json_str)
@@ -27,8 +38,8 @@ def get_authenticated_service():
                 token_data = json.loads(base64.b64decode(token_json_str).decode('utf-8'))
                 
             # Agregamos client_id y client_secret al token_data si faltan
-            cred_json_str = os.environ.get('YOUTUBE_CREDENTIALS_JSON')
             if cred_json_str:
+                cred_json_str = clean_secret(cred_json_str)
                 client_secrets = json.loads(cred_json_str)
                 installed = client_secrets.get('installed', client_secrets.get('web', {}))
                 token_data['client_id'] = installed.get('client_id')

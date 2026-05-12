@@ -13,13 +13,20 @@ async function getLatestDevocional() {
         const rawToken = process.env.YOUTUBE_TOKEN_JSON;
         
         if (rawToken) {
+            // Limpieza resiliente de basura de copiado/pegado
+            let cleanToken = rawToken.strip ? rawToken.strip() : rawToken.trim();
+            if (cleanToken.startsWith("```json")) cleanToken = cleanToken.slice(7);
+            if (cleanToken.startsWith("```")) cleanToken = cleanToken.slice(3);
+            if (cleanToken.endsWith("```")) cleanToken = cleanToken.slice(0, -3);
+            cleanToken = cleanToken.trim();
+
             try {
-                // Intento 1: ¿Es JSON directo?
-                tokenData = JSON.parse(rawToken);
+                // Intento 1: JSON Directo
+                tokenData = JSON.parse(cleanToken);
             } catch (e) {
                 // Intento 2: ¿Es Base64?
                 try {
-                    tokenData = JSON.parse(Buffer.from(rawToken, 'base64').toString());
+                    tokenData = JSON.parse(Buffer.from(cleanToken, 'base64').toString());
                 } catch (e2) {
                     throw new Error("El secreto YOUTUBE_TOKEN_JSON no tiene un formato válido (ni JSON ni Base64)");
                 }
