@@ -32,15 +32,15 @@ async function getLatestDevocional() {
     const gmail = google.gmail({ version: 'v1', auth: oAuth2Client });
 
         try {
-        // 2. Buscar correos del remitente específico (filtrado al 7 de mayo de 2026)
+        // 2. Buscar el último correo del remitente específico
         const res = await gmail.users.messages.list({
             userId: 'me',
-            q: 'from:devocional@vnpem.org.mx after:2026/05/06 before:2026/05/08',
+            q: 'from:devocional@vnpem.org.mx',
             maxResults: 1
         });
 
         if (!res.data.messages || res.data.messages.length === 0) {
-            console.log('⚠️ No se encontraron correos de este remitente el 7 de mayo.');
+            console.log('⚠️ No se encontraron correos de este remitente.');
             return null;
         }
 
@@ -58,14 +58,13 @@ async function getLatestDevocional() {
         const messageDate = new Date(internalDate);
         const today = new Date();
 
-        /* VALIDACIÓN DE SEGURIDAD TEMPORALMENTE DESACTIVADA PARA PRUEBA
+        // VALIDACIÓN DE SEGURIDAD: Comprobar que el correo es de HOY
         if (messageDate.getUTCDate() !== today.getUTCDate() || 
             messageDate.getUTCMonth() !== today.getUTCMonth()) {
             console.log(`⚠️ Seguridad: El correo más reciente es del ${messageDate.toLocaleDateString()}, pero hoy es ${today.toLocaleDateString()}.`);
             console.log("Abortando para evitar publicar contenido antiguo.");
             return null;
         }
-        */
 
         // El cuerpo puede venir en diferentes formatos (plain o html)
         let body = '';
