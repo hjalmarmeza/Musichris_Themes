@@ -40,17 +40,22 @@ def get_authenticated_service():
         print(f'❌ FATAL: No se pudo parsear YOUTUBE_TOKEN_JSON: {e}')
         return None
 
-    # 2. Inyectar client_id/client_secret desde YOUTUBE_CREDENTIALS_JSON si se provee
-    if cred_json_str:
+    # 2. Inyectar client_id/client_secret desde YOUTUBE_CREDENTIALS_JSON SOLO si faltan en el token
+    if cred_json_str and (not token_data.get('client_id') or not token_data.get('client_secret')):
         try:
             cred_str = clean_secret(cred_json_str)
             client_secrets = json.loads(cred_str)
             installed = client_secrets.get('installed', client_secrets.get('web', {}))
-            token_data['client_id']     = installed.get('client_id',     token_data.get('client_id'))
-            token_data['client_secret'] = installed.get('client_secret', token_data.get('client_secret'))
-            print('✅ client_id y client_secret inyectados desde YOUTUBE_CREDENTIALS_JSON.')
+            if not token_data.get('client_id'):
+                token_data['client_id'] = installed.get('client_id')
+            if not token_data.get('client_secret'):
+                token_data['client_secret'] = installed.get('client_secret')
+            print('✅ client_id/client_secret completados desde YOUTUBE_CREDENTIALS_JSON.')
         except Exception as e:
-            print(f'⚠️ No se pudo parsear YOUTUBE_CREDENTIALS_JSON (se usará el que viene en el token): {e}')
+            print(f'⚠️ No se pudo parsear YOUTUBE_CREDENTIALS_JSON: {e}')
+    else:
+        print(f'ℹ️ Usando client_id del propio token (no se sobreescribe desde CREDENTIALS_JSON).')
+        print(f'ℹ️ client_id en uso: {token_data.get("client_id", "")[:30]}...')
 
     # 3. Garantizar que token_uri siempre esté presente
     token_data.setdefault('token_uri', TOKEN_URI)
