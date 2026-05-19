@@ -1,65 +1,86 @@
 import os
 import sys
-import pickle
-from google_auth_oauthlib.flow import InstalledAppFlow
+import json
 from google.auth.transport.requests import Request
+from google.oauth2.credentials import Credentials
 from googleapiclient.discovery import build
 from googleapiclient.http import MediaFileUpload
 
-# Alcances para la API de YouTube
+# Alcance maestro de YouTube
 SCOPES = ['https://www.googleapis.com/auth/youtube.upload']
-
-from google.oauth2.credentials import Credentials
-import json
+TOKEN_URI = 'https://oauth2.googleapis.com/token'
 
 def get_authenticated_service():
-    credentials = None
-    
-    # Intentar cargar desde la variable de entorno unificada YOUTUBE_TOKEN_JSON
     token_json_str = os.environ.get('YOUTUBE_TOKEN_JSON')
-    cred_json_str = os.environ.get('YOUTUBE_CREDENTIALS_JSON')
+    cred_json_str  = os.environ.get('YOUTUBE_CREDENTIALS_JSON')
+
+    if not token_json_str:
+        print('❌ FATAL: La variable de entorno YOUTUBE_TOKEN_JSON no está definida.')
+        return None
 
     def clean_secret(val):
-        if not val: return val
         val = val.strip()
-        if val.startswith("```json"): val = val[7:]
-        if val.startswith("```"): val = val[3:]
-        if val.endswith("```"): val = val[:-3]
+        for marker in ['```json', '```']:
+            if val.startswith(marker):
+                val = val[len(marker):]
+        if val.endswith('```'):
+            val = val[:-3]
         return val.strip()
 
-    if token_json_str:
+    # 1. Parsear el JSON del token
+    try:
+        token_str = clean_secret(token_json_str)
         try:
-            token_json_str = clean_secret(token_json_str)
-            # Podría venir en JSON directo o en Base64, intentamos ambos
-            try:
-                token_data = json.loads(token_json_str)
-            except:
-                import base64
-                token_data = json.loads(base64.b64decode(token_json_str).decode('utf-8'))
-                
-            # Agregamos client_id y client_secret al token_data si faltan
-            if cred_json_str:
-                cred_json_str = clean_secret(cred_json_str)
-                client_secrets = json.loads(cred_json_str)
-                installed = client_secrets.get('installed', client_secrets.get('web', {}))
-                token_data['client_id'] = installed.get('client_id')
-                token_data['client_secret'] = installed.get('client_secret')
-                
-            credentials = Credentials.from_authorized_user_info(token_data, SCOPES)
-        except Exception as e:
-            print(f"⚠️ Error cargando token JSON: {e}")
-
-    # Si no se pudo desde entorno, intentar flujo local (fallback)
-    if not credentials or not credentials.valid:
-        if credentials and credentials.expired and credentials.refresh_token:
-            try:
-                credentials.refresh(Request())
-            except:
-                credentials = None
-
-    if not credentials:
-        print("❌ Error de autenticación profunda: No se pudo cargar o refrescar el token.")
+            token_data = json.loads(token_str)
+        except json.JSONDecodeError:
+            import base64
+            token_data = json.loads(base64.b64decode(token_str).decode('utf-8'))
+        print(f'✅ Token JSON parseado correctamente. Claves presentes: {list(token_data.keys())}')
+    except Exception as e:
+        print(f'❌ FATAL: No se pudo parsear YOUTUBE_TOKEN_JSON: {e}')
         return None
+
+    # 2. Inyectar client_id/client_secret desde YOUTUBE_CREDENTIALS_JSON si se provee
+    if cred_json_str:
+        try:
+            cred_str = clean_secret(cred_json_str)
+            client_secrets = json.loads(cred_str)
+            installed = client_secrets.get('installed', client_secrets.get('web', {}))
+            token_data['client_id']     = installed.get('client_id',     token_data.get('client_id'))
+            token_data['client_secret'] = installed.get('client_secret', token_data.get('client_secret'))
+            print('✅ client_id y client_secret inyectados desde YOUTUBE_CREDENTIALS_JSON.')
+        except Exception as e:
+            print(f'⚠️ No se pudo parsear YOUTUBE_CREDENTIALS_JSON (se usará el que viene en el token): {e}')
+
+    # 3. Garantizar que token_uri siempre esté presente
+    token_data.setdefault('token_uri', TOKEN_URI)
+
+    # 4. Verificar campos críticos
+    for field in ['client_id', 'client_secret', 'refresh_token', 'token_uri']:
+        if not token_data.get(field):
+            print(f'❌ FATAL: El campo requerido "{field}" falta en el token JSON.')
+            return None
+
+    # 5. Construir credenciales y refrescar
+    try:
+        credentials = Credentials.from_authorized_user_info(token_data, SCOPES)
+        print(f'✅ Credenciales creadas. valid={credentials.valid}, expired={credentials.expired}')
+    except Exception as e:
+        print(f'❌ FATAL: from_authorized_user_info falló: {e}')
+        return None
+
+    if not credentials.valid:
+        if credentials.refresh_token:
+            try:
+                print('🔄 Refrescando token de acceso...')
+                credentials.refresh(Request())
+                print('✅ Token refrescado exitosamente.')
+            except Exception as e:
+                print(f'❌ FATAL: Falló el refresco del token: {e}')
+                return None
+        else:
+            print('❌ FATAL: El token está inválido y no hay refresh_token disponible.')
+            return None
 
     return build('youtube', 'v3', credentials=credentials)
 
