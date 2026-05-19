@@ -40,8 +40,8 @@ jobs:
       - name: 🌍 Abastecimiento de Paisajes
         run: |
           mkdir -p assets/backgrounds
-          # Descarga la carpeta de Google Drive directamente a assets/backgrounds
-          gdown --folder --id 13phD_lCgjsFcKXwkLmpAUxtG27GBfhRO -O assets/backgrounds/ --remaining-ok
+          # gdown 5.x+ usa la URL completa directamente sin --id
+          gdown --folder "https://drive.google.com/drive/folders/13phD_lCgjsFcKXwkLmpAUxtG27GBfhRO" -O assets/backgrounds/ || echo "⚠️ gdown falló, continuando sin imágenes de fondo..."
 
       - name: 🔐 Reconstruct Credentials
         run: |
