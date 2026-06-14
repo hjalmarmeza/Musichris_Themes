@@ -48,7 +48,7 @@ async function forgeThemeScript(topic) {
                 temperature: 0.7
             }, {
                 headers: { 'Authorization': `Bearer ${keys.cerebras}`, 'Content-Type': 'application/json' },
-                timeout: 12000
+                timeout: 25000
             });
             providerUsed = "CEREBRAS";
         } catch (error) {
@@ -69,7 +69,7 @@ async function forgeThemeScript(topic) {
                 temperature: 0.7
             }, {
                 headers: { 'Authorization': `Bearer ${keys.deepinfra}`, 'Content-Type': 'application/json' },
-                timeout: 15000
+                timeout: 35000
             });
             providerUsed = "DEEPINFRA";
         } catch (error) {
@@ -100,6 +100,9 @@ async function forgeThemeScript(topic) {
     }
 
     if (!response) {
+        if (keys.cerebras || keys.deepinfra || keys.deepseek) {
+            throw new Error("Error crítico: Todos los motores de IA configurados fallaron o agotaron el tiempo de respuesta (Timeouts/Saturación).");
+        }
         throw new Error("Error crítico: No hay API Keys configuradas para la forja ministerial.");
     }
 
