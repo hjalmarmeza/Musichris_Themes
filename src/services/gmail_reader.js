@@ -2,7 +2,7 @@ const { google } = require('googleapis');
 const fs = require('fs');
 
 async function getLatestDevocional() {
-    console.log('📧 Buscando devocional de devocional@vnpem.org.mx...');
+    console.log('📧 Buscando devocional de connect@newsletter.purposedriven.com...');
     
     // 1. Cargar Credenciales y Token (Buscando en múltiples ubicaciones posibles)
     const credPath = fs.existsSync('src/client_secrets.json') ? 'src/client_secrets.json' : 'credentials.json';
@@ -42,7 +42,7 @@ async function getLatestDevocional() {
         // 2. Buscar el último correo del remitente específico
         const res = await gmail.users.messages.list({
             userId: 'me',
-            q: 'from:devocional@vnpem.org.mx',
+            q: 'from:connect@newsletter.purposedriven.com',
             maxResults: 1
         });
 
