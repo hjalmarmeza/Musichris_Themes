@@ -13,6 +13,7 @@ REGLAS DE RESCATE ALGORÍTMICO (CTR & SEO):
 4. TÍTULOS HUMANOS: Evita el "estilo IA". No uses "Descubre...", "El secreto de...", "Reflexiones sobre...". Usa títulos que paren el scroll (Stop-Scrolling), que planteen una pregunta vital o una verdad innegable.
 5. TAGS DINÁMICOS: Genera 10-15 etiquetas (tags) específicas del tema, mezclando términos de alta búsqueda y términos específicos del contenido.
 6. EMOJIS: Usa emojis con moderación pero estratégicamente para resaltar el punto clave del título.
+7. PROHIBIDO COMILLAS DOBLES: NUNCA uses comillas dobles ("") dentro de tus textos. Si debes citar un versículo o frase, usa ÚNICAMENTE comillas simples ('').
 
 RESPONDE EXCLUSIVAMENTE CON EL SIGUIENTE OBJETO JSON:
 {
@@ -40,7 +41,7 @@ async function forgeThemeScript(topic) {
         try {
             console.log(`🚀 Forja Nivel 1: Intentando con CEREBRAS...`);
             response = await axios.post("https://api.cerebras.ai/v1/chat/completions", {
-                model: "llama3.1-8b",
+                model: "llama3.3-70b",
                 messages: [
                     { role: "system", content: SYSTEM_PROMPT },
                     { role: "user", content: `TEMA: "${topic}"` }
@@ -115,7 +116,11 @@ async function forgeThemeScript(topic) {
         const firstBrace = content.indexOf('{');
         const lastBrace = content.lastIndexOf('}');
         if (firstBrace === -1 || lastBrace === -1) throw new Error("JSON no encontrado");
-        const jsonString = content.substring(firstBrace, lastBrace + 1);
+        let jsonString = content.substring(firstBrace, lastBrace + 1);
+        
+        // Limpieza de emergencia: si la IA puso ""texto"" por error, lo pasamos a "texto" o 'texto'
+        jsonString = jsonString.replace(/""/g, '"');
+        
         return JSON.parse(jsonString);
     } catch (e) {
         console.error("❌ Respuesta inválida de la IA:", content);
