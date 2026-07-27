@@ -112,9 +112,16 @@ async function forgeThemeScript(topic) {
     
     // Extracción de JSON
     try {
-        content = content.replace(/```json/g, '').replace(/```/g, '').trim();
+        content = content.replace(/```json/gi, '').replace(/```/g, '').trim();
         const firstBrace = content.indexOf('{');
-        const lastBrace = content.lastIndexOf('}');
+        let lastBrace = content.lastIndexOf('}');
+        
+        // Auto-cierre si la IA olvidó la llave final (común en respuestas cortadas)
+        if (firstBrace !== -1 && lastBrace === -1) {
+            content += '\n}';
+            lastBrace = content.length - 1;
+        }
+        
         if (firstBrace === -1 || lastBrace === -1) throw new Error("JSON no encontrado");
         let jsonString = content.substring(firstBrace, lastBrace + 1);
         
