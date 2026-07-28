@@ -14,6 +14,7 @@ REGLAS DE RESCATE ALGORÍTMICO (CTR & SEO):
 5. TAGS DINÁMICOS: Genera 10-15 etiquetas (tags) específicas del tema, mezclando términos de alta búsqueda y términos específicos del contenido.
 6. EMOJIS: Usa emojis con moderación pero estratégicamente para resaltar el punto clave del título.
 7. PROHIBIDO COMILLAS DOBLES: NUNCA uses comillas dobles ("") dentro de tus textos. Si debes citar un versículo o frase, usa ÚNICAMENTE comillas simples ('').
+8. GRAMÁTICA IMPECABLE: Aplica estrictamente las reglas del español. Cambia 'y' por 'e' antes de palabras que empiezan con 'i' o 'hi' (ej: "gracia e inteligencia"). Cambia 'o' por 'u' antes de palabras que empiezan con 'o' o 'ho'.
 
 RESPONDE EXCLUSIVAMENTE CON EL SIGUIENTE OBJETO JSON:
 {
