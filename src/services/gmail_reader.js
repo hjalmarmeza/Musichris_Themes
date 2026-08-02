@@ -65,10 +65,10 @@ async function getLatestDevocional() {
         const messageDate = new Date(internalDate);
         const today = new Date();
 
-        // VALIDACIÓN DE SEGURIDAD: Comprobar que el correo es RECIENTE (últimas 24 horas)
+        // VALIDACIÓN DE SEGURIDAD: Comprobar que el correo es RECIENTE (últimas 72 horas para cubrir fines de semana)
         const diffHoras = (today - messageDate) / (1000 * 60 * 60);
         
-        if (diffHoras > 24) {
+        if (diffHoras > 72) {
             console.log(`⚠️ Seguridad: El correo más reciente tiene ${Math.round(diffHoras)} horas de antigüedad.`);
             console.log("Abortando para evitar publicar contenido antiguo.");
             return null;
