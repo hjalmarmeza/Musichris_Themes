@@ -71,7 +71,7 @@ async function forgeThemeScript(topic) {
                 temperature: 0.7
             }, {
                 headers: { 'Authorization': `Bearer ${keys.deepinfra}`, 'Content-Type': 'application/json' },
-                timeout: 35000
+                timeout: 60000
             });
             providerUsed = "DEEPINFRA";
         } catch (error) {
