@@ -38,10 +38,10 @@ jobs:
           pip install google-auth-oauthlib google-api-python-client Pillow gdown
 
       - name: 🌍 Abastecimiento de Paisajes
+        continue-on-error: true
         run: |
           mkdir -p assets/backgrounds
-          # gdown 5.x+ usa la URL completa directamente sin --id
-          gdown --folder "https://drive.google.com/drive/folders/13phD_lCgjsFcKXwkLmpAUxtG27GBfhRO" -O assets/backgrounds/ || echo "⚠️ gdown falló, continuando sin imágenes de fondo..."
+          gdown --folder "https://drive.google.com/drive/folders/13phD_lCgjsFcKXwkLmpAUxtG27GBfhRO" -O assets/backgrounds/ --remaining-ok || echo "⚠️ Descarga completada con advertencias de Google Drive. Continuando..."
 
       - name: 🔐 Reconstruct Credentials
         run: |
