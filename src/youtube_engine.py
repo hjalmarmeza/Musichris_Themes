@@ -107,7 +107,7 @@ def upload_theme_video(video_path, title, description, tags=None):
             'categoryId': '22' # People & Blogs
         },
         'status': {
-            'privacyStatus': 'public',
+            'privacyStatus': 'unlisted',
             'selfDeclaredMadeForKids': False
         }
     }
