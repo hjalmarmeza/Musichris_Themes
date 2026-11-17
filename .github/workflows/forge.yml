@@ -2,7 +2,7 @@ name: 💎 MusiChris Themes Forge
 
 on:
   schedule:
-    - cron: '0 15 * * *' # Todos los días a las 15:00 UTC (17:00 España / 09:00 México)
+    - cron: '15 16 * * *' # Todos los días a las 16:15 UTC (17:15 España CET / 10:15 México)
   workflow_dispatch:
     inputs:
       theme:
@@ -41,7 +41,7 @@ jobs:
         continue-on-error: true
         run: |
           mkdir -p assets/backgrounds
-          gdown --folder "https://drive.google.com/drive/folders/13phD_lCgjsFcKXwkLmpAUxtG27GBfhRO" -O assets/backgrounds/ --remaining-ok || echo "⚠️ Descarga completada con advertencias de Google Drive. Continuando..."
+          gdown --folder "https://drive.google.com/drive/folders/13phD_lCgjsFcKXwkLmpAUxtG27GBfhRO" -O assets/backgrounds/ || echo "⚠️ Descarga completada con advertencias de Google Drive. Continuando..."
 
       - name: 🔐 Reconstruct Credentials
         run: |
