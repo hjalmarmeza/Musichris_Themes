@@ -2,7 +2,7 @@ name: 💎 MusiChris Themes Forge
 
 on:
   schedule:
-    - cron: '15 16 * * *' # Todos los días a las 16:15 UTC (17:15 España CET / 10:15 México)
+    - cron: '35 16 * * *' # Todos los días a las 16:35 UTC (17:35 España CET / 10:35 México)
   workflow_dispatch:
     inputs:
       theme:
